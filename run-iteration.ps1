@@ -7,6 +7,12 @@ $originalLocation = $PWD
 
 Set-Location scripts
 
-k6 run -o influxdb=http://localhost:8086/k6 script.js
+if (-not(Test-Path -Path TestResults)) {
+    New-Item TestResults -ItemType Directory
+}
+
+$guid = [Guid]::NewGuid().ToString();
+
+k6 run -o json=TestResults\$guid.json -o influxdb=http://localhost:8086/k6 script.js
 
 Set-Location $originalLocation

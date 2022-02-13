@@ -4,6 +4,10 @@ if (-not(Test-Path -Path .\k6)) {
     git clone https://github.com/grafana/k6
 }
 
+if (-not(Test-Path -Path .\jq.exe)) {
+    Invoke-WebRequest -Uri https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe -OutFile jq.exe
+}
+
 Set-Location k6
 git submodule update --init
 docker-compose up -d influxdb grafana
