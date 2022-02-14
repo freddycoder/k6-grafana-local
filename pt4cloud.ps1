@@ -1,4 +1,4 @@
-# This is a script that implement an algorithm by the PT4Cloud paper
+# This is a script that implement an algorithm inspired by the PT4Cloud paper
 # https://wwang.github.io/papers/PT4Cloud.pdf
 param (
     # The test duration in seconds
