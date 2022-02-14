@@ -1,0 +1,1 @@
+. | select(.type=="Point" and .metric == "http_req_duration" and .data.tags.status >= "200") | .data.value
