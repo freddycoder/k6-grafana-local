@@ -55,6 +55,7 @@ export class TestService {
         var body = someString;
         // Get a random data row
         var dataRow = this.data[Math.floor(Math.random() * this.data.length)];
+        var keyArray = [];
         for (var i = 0; i < body.length; i++) {
             if (body[i] == "{") {
                 // Parse the next integer in the string
@@ -68,9 +69,13 @@ export class TestService {
                 i++;
                 // Get the value
                 var keyInt = parseInt(key);
-                var value = dataRow[keyInt];
-                body = body.replace("{" + keyInt + "}", value);
+                keyArray.push(keyInt);
             }
+        }
+        for (var i = 0; i < keyArray.length; i++) {
+            var key = keyArray[i];
+            var value = dataRow[key];
+            body = body.replace("{" + key + "}", value);
         }
         return body;
     }

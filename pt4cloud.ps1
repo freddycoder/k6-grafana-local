@@ -42,6 +42,7 @@ function New-Using {
 }
 
 function Get-UnGetzipFile($filename) {
+    $filename = $PWD.Path + "\" + $filename
     New-Using ($stream = New-Object System.IO.MemoryStream) {
         New-Using ($inputStream = [System.IO.File]::OpenRead($filename)) {
             New-Using ($gzipStream = $gzipStream = New-Object System.IO.Compression.GZipStream ($inputStream, [System.IO.Compression.CompressionMode]::Decompress)) {
