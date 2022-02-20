@@ -1,5 +1,6 @@
 param (
-    [int]$testDuration = 120
+    [int]$testDuration = 120,
+    [string]$outputFileType = "gz"
 )
 
 if (-not(Test-Path -Path scripts\script.js)) {
@@ -17,6 +18,6 @@ if (-not(Test-Path -Path TestResults)) {
 
 $guid = [Guid]::NewGuid().ToString();
 
-k6 run -o json=TestResults\$guid.json -o influxdb=http://localhost:8086/k6 script.js -e TestDuration=$testDuration
+k6 run -o json=TestResults\$guid.$outputFileType -o influxdb=http://localhost:8086/k6 script.js -e TestDuration=$testDuration
 
 Set-Location $originalLocation
