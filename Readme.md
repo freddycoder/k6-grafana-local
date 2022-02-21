@@ -46,7 +46,15 @@ testSetup.testServices.push(new TestService(
     'transaction time OK': r => r.timings.duration < 200
   }),
   "",
-  papaparse.parse(open('./datas/pagesize.csv'), { header: false }).data
+  papaparse.parse(open('./datas/pagesize.csv'), { header: false }).data,
+  data => {
+    return {
+      headers: {
+          'Authorization': 'Bearer ' + data.access_token,
+          'Content-Type': 'application/json'
+      }
+    }
+  }
 ));
 
 testSetup.generateStages(0, 0, 0, parseInt(__ENV.TestDuration));
@@ -54,7 +62,7 @@ testSetup.generateStages(0, 0, 0, parseInt(__ENV.TestDuration));
 export let options = {
   stages: testSetup.stages,
   thresholds: {
-    'http_req_duration': ['p(95)<1000']
+    'http_req_duration': ['p(95)<100']
   }
 };
 
@@ -63,25 +71,16 @@ export function setup () {
 }
 
 export default function (data) {
-    var testCase = testSetup.selectTest();
+  var testCase = testSetup.selectTest(__ITER, __VU);
 
-    var url = testCase.getUrl();
+  var url = testCase.getUrl();
 
-    var params = {
-        headers: {
-            'Authorization': 'Bearer ' + data.access_token,
-            'Content-Type': 'application/json'
-        }
-    };
+  var params = testCase.params(data);
 
-    var response = http.get(url, params);
+  var response = http.get(url, params);
 
-    testCase.testChecks(response);
+  testCase.testChecks(response);
 
-    var sleepTime = 1000 - response.timings.duration;
-
-    if (sleepTime > 0) {
-        sleep(sleepTime / 1000);
-    }
-  }
+  testSetup.wait(response);
+}
 ```

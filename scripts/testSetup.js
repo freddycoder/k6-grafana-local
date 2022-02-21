@@ -18,24 +18,40 @@ export class TestSetup {
     getVUs(t) {
         var vu = 0;
         for (var i = 0; i < this.testServices.length; i++) {
-            vu += this.testServices[i].VUFunc(t);
+            vu += this.testServices[i].getNbVU(t);
         }
         return vu;
     }
 
-    selectTest() {
+    selectTest(iteration, vu) {
         var testCase = this.testServices[Math.floor(Math.random() * this.testServices.length)];
         return testCase;
+    }
+
+    wait(response) {
+        var sleepTime = 1000 - response.timings.duration;
+
+        if (sleepTime > 0) {
+            sleep(sleepTime / 1000);
+        }
     }
 }
 
 export class TestService {
-    constructor(url, VUFunc, testChecks, requestBody, data) {
+    constructor(url, VUFunc, testChecks, requestBody, data, params) {
         this.url = url;
         this.VUFunc = VUFunc;
         this.testChecks = testChecks;
         this.request = requestBody;
         this.data = data;
+        this.params = params;
+        this.stagesVU = [];
+    }
+
+    getNbVU(t) {
+        var nbVU = this.VUFunc(t);
+        this.stagesVU.push(nbVU);
+        return nbVU;
     }
 
     /*
