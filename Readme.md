@@ -35,8 +35,13 @@ import { authenticateUsingAzure } from './azure.js'
 import { gaussian, gaussianStages, randn_bm } from 'https://raw.githubusercontent.com/freddycoder/k6-gauss/main/gaussian.js'
 import { TestSetup, TestService } from './testSetup.js'
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
+import { SharedArray } from 'k6/data';
 
 const testSetup = new TestSetup();
+
+const pagesizes = new SharedArray('Page sizes', function () {
+  return papaparse.parse(open('./datas/pagesize.csv'), { header: false, delimiter: ";" }).data;
+});
 
 testSetup.testServices.push(new TestService(
   'https://www.google.ca/search?q={0}',
@@ -46,7 +51,7 @@ testSetup.testServices.push(new TestService(
     'transaction time OK': r => r.timings.duration < 200
   }),
   "",
-  papaparse.parse(open('./datas/pagesize.csv'), { header: false }).data,
+  pagesizes,
   data => {
     return {
       headers: {
