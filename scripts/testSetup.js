@@ -2,7 +2,7 @@ import { gaussian, gaussianStages, randn_bm } from 'https://raw.githubuserconten
 import { check, sleep } from 'k6';
 /*
     This is a k6 test setup class. The goal is to provide a way to setup k6 tests
-    for many services at the same time. Each service will have its own VU,
+    for many services at the same time. Each service will have his own VU,
     data, request, and checks.
 */
 export class TestSetup {
@@ -24,8 +24,30 @@ export class TestSetup {
     }
 
     selectTest(iteration, vu) {
-        var testCase = this.testServices[Math.floor(Math.random() * this.testServices.length)];
-        return testCase;
+        var frequences = this.testServices.map(s => this.stages[iteration].target != 0 ? s.stagesVU[iteration] / this.stages[iteration].target : 0);
+        var frequencesCumul = [];
+        
+        for (var i = 0; i < frequences.length; i++) {
+            var fq = frequences[i];
+            
+            if (frequencesCumul.length >= 1) {
+                fq += frequencesCumul[frequencesCumul.length - 1];
+            }
+
+            frequencesCumul.push(fq);
+        }
+
+        var randNumber = Math.random();
+        var index = 0;
+        
+        for (var i = 0; i < this.testServices.length; i++) {
+            if ((i == 0 || frequencesCumul[i -1] <= randNumber) && frequencesCumul[i] >= randNumber) {
+                index = i;
+                break;
+            }
+        }
+
+        return this.testServices[index];
     }
 
     wait(response) {
